@@ -19,10 +19,29 @@ mongoose.connection.once('open', () => {
 })
 
 
-app.get('/new', function (req, res) {
-  res.render('New'); // Get the New Page
+// Index route
+app.get('/logs', async (req, res) => {
+  try {
+      const foundLogs = await Log.find({})
+      res.render('logs/Index', {
+          logs: foundLogs
+      })
+  }
+  catch(error) {
+      res.status(400).send({message: error.message})
+  }
+  res.render('index')
+})
+
+
+// NEW Route
+app.get('/logs/new', function (req, res) {
+  res.render('logs/New'); // Get the New Page
 });
 
+
+
+// logs
 app.post('/logs', async (req, res) => {
   if(req.body.shipIsBroken === 'on'){
       req.body.shipIsBroken = true
@@ -32,7 +51,7 @@ app.post('/logs', async (req, res) => {
   }
   try {
       const createdLog = await Log.create(req.body)
-      res.redirect(`/logs/${createdLog._id}`)
+      // res.redirect(`/logs/${createdLog._id}`)
   } 
   catch(error) {
       res.status(400).send({message: error.message})
@@ -40,6 +59,19 @@ app.post('/logs', async (req, res) => {
 
   console.log(req.body)
   res.send(req.body)
+})
+
+//Show Route
+app.get('/logs/:id', async (req, res) => {
+  try {
+      const foundLog = await Log.findOne({_id: req.params.id})
+      res.render('logs/Show', {
+      log: foundLog
+      })
+  }
+  catch(error) {
+      res.status(400).send({ message: error.message })
+  }
 })
 
 // Define a "root" route directly on app
@@ -50,3 +82,16 @@ app.post('/logs', async (req, res) => {
 app.listen(PORT, function () {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+
+
+
+
+//index
+//new
+//delete
+//update
+//create
+//edit
+//show
