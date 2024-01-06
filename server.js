@@ -22,16 +22,14 @@ mongoose.connection.once('open', () => {
 // Index route
 app.get('/logs', async (req, res) => {
   try {
-      const foundLogs = await Log.find({})
-      res.render('logs/Index', {
-          logs: foundLogs
-      })
+    const foundLogs = await Log.find({});
+    res.render('logs/Index', {
+      logs: foundLogs
+    });
+  } catch (error) {
+    res.status(400).send({ message: error.message });
   }
-  catch(error) {
-      res.status(400).send({message: error.message})
-  }
-  res.render('index')
-})
+});
 
 
 // NEW Route
@@ -66,6 +64,20 @@ app.get('/logs/:id', async (req, res) => {
   try {
       const foundLog = await Log.findOne({_id: req.params.id})
       res.render('logs/Show', {
+      log: foundLog
+      })
+  }
+  catch(error) {
+      res.status(400).send({ message: error.message })
+  }
+})
+
+
+//EDIT Route
+app.get('/logs/:id/edit', async (req, res)=>{
+  try {
+      const foundLog = await Log.findOne({'_id': req.params.id})
+      res.render('logs/Edit', {
       log: foundLog
       })
   }
