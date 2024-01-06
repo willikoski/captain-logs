@@ -7,6 +7,9 @@ const Log = require('./models/logs')
 // Create our express app
 const app = express();
 
+const methodOverride = require('method-override');  // Tried adding a method-override https://www.npmjs.com/package/method-override Thinking it would fix my EDIT route.
+app.use(methodOverride('_method'));
+
 app.use(express.urlencoded({extended: true})) 
 
 // view engine
@@ -19,12 +22,14 @@ mongoose.connection.once('open', () => {
 })
 
 
+
+
 // Index route
 app.get('/logs', async (req, res) => {
   try {
-    const foundLogs = await Log.find({});
+    const foundLog = await Log.find({});
     res.render('logs/Index', {
-      logs: foundLogs
+      logs: foundLog
     });
   } catch (error) {
     res.status(400).send({ message: error.message });
@@ -49,7 +54,6 @@ app.post('/logs', async (req, res) => {
   }
   try {
       const createdLog = await Log.create(req.body)
-      // res.redirect(`/logs/${createdLog._id}`)
   } 
   catch(error) {
       res.status(400).send({message: error.message})
@@ -86,11 +90,17 @@ app.get('/logs/:id/edit', async (req, res)=>{
   }
 })
 
-// Define a "root" route directly on app
-// Tomorrow, we'll use best practice routing
+//PUT ROUTE
 
-// Tell the app to listen on port 3000
-// for HTTP requests from clients
+app.put('/logs/:id', async (req, res) => {
+  try {
+    const updatedLog = await Log.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.redirect('/logs');
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+});
+
 app.listen(PORT, function () {
   console.log(`Server is running on port ${PORT}`);
 });
